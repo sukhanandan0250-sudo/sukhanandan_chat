@@ -17,6 +17,7 @@ const server = http.createServer(app);
 const PORT = process.env.PORT || 8000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+let isMongoConnected = false;
 
 // ✅ create socket.io server
 const io = new Server(server, {
@@ -29,6 +30,31 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json({ limit: "25mb" }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+app.get("/", (req, res) => {
+  res.send("Backend running successfully");
+});
+
+const connectDB = async () => {
+  if (isMongoConnected) return;
+
+  if (!process.env.MONGO_URI) {
+    throw new Error("MONGO_URI is not set");
+  }
+
+  await mongoose.connect(process.env.MONGO_URI);
+  isMongoConnected = true;
+  console.log("MongoDB connected");
+};
+
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 // routes
 app.use("/user", userRoutes);
@@ -95,13 +121,19 @@ io.on("connection", (socket) => {
   });
 });
 
-// db + server start
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("MongoDB connected");
+const startServer = async () => {
+  try {
+    await connectDB();
     server.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
     });
-  })
-  .catch((err) => console.log("DB Error:", err));
+  } catch (err) {
+    console.log("DB Error:", err);
+  }
+};
+
+if (process.env.VERCEL !== "1") {
+  startServer();
+}
+
+export default app;
