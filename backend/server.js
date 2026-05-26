@@ -31,6 +31,13 @@ app.use(cors());
 app.use(express.json({ limit: "25mb" }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+app.use((req, res, next) => {
+  if (req.url.startsWith("/api/")) {
+    req.url = req.url.slice(4);
+  }
+  next();
+});
+
 app.get("/", (req, res) => {
   res.send("Backend running successfully");
 });

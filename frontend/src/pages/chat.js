@@ -101,7 +101,7 @@ const Chat = () => {
     setCurrentUser(user);
     socket.emit("registerUser", user._id);
 
-    axios.get("http://localhost:8000/user/users", {
+    axios.get("/user/users", {
       headers: { Authorization: `Bearer ${token}` },
     }).then(res => setUsers(res.data))
       .catch(() => {
@@ -147,7 +147,7 @@ const Chat = () => {
   useEffect(() => {
     if (!selectedconversation || !token) return;
 
-    axios.get(`http://localhost:8000/message/get/${selectedconversation._id}`, {
+    axios.get(`/message/get/${selectedconversation._id}`, {
       headers: { Authorization: `Bearer ${token}` },
     }).then(res => setMessages(res.data))
       .catch(() => setError("Could not load messages"));
@@ -465,7 +465,7 @@ const Chat = () => {
         const formData = new FormData();
         formData.append("file", pendingAttachment.file);
         const uploadRes = await axios.post(
-          "http://localhost:8000/message/upload",
+          "/message/upload",
           formData,
           {
             headers: {
@@ -478,7 +478,7 @@ const Chat = () => {
       }
 
       const res = await axios.post(
-        `http://localhost:8000/message/send/${selectedconversation._id}`,
+        `/message/send/${selectedconversation._id}`,
         { text, attachment },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -521,7 +521,7 @@ const Chat = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:8000/user/contacts",
+        "/user/contacts",
         { query },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -542,7 +542,7 @@ const Chat = () => {
 
     try {
       const res = await axios.put(
-        "http://localhost:8000/user/me",
+        "/user/me",
         profileForm,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -563,7 +563,7 @@ const Chat = () => {
     if (!ok) return;
 
     try {
-      await axios.delete("http://localhost:8000/user/me", {
+      await axios.delete("/user/me", {
         headers: { Authorization: `Bearer ${token}` }
       });
       logout();

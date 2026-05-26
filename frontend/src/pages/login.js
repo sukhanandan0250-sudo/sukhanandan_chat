@@ -23,7 +23,7 @@ const Login = ()=>{
     try {
       const endpoint = mode === "login" ? "login" : "signup";
       const payload = mode === "login" ? { email, password } : { name, username, email, password };
-      const res = await axios.post(`http://localhost:8000/user/${endpoint}`, payload);
+      const res = await axios.post(`/user/${endpoint}`, payload);
       localStorage.setItem("token",res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       setCurrentUser(res.data.user);

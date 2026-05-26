@@ -1,0 +1,8 @@
+{
+  "name": "real-chat2026",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "npm --prefix frontend run build"
+  }
+}
